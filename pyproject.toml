@@ -5,14 +5,21 @@ description = "A Matrix-style savescreen for the terminal, implemented in Python
 authors = ["RBerga06 <78449715+RBerga06@users.noreply.github.com>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
-packages = [{include = "rberga06_matrix"}]
+packages = [{include = "rberga06", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 rich = "^13.4.1"
 typer = "^0.9.0"
+cython = {version = "^3.0.0b3", allow-prereleases = true}
 
+[tool.poetry.build]
+script = "build.py"
+generate-setup-file = true
+
+[tool.poetry.scripts]
+matrix = "rberga06.matrix.main:app"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "cython"]
 build-backend = "poetry.core.masonry.api"
