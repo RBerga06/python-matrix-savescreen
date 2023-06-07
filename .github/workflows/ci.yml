@@ -2,9 +2,11 @@ name: Matrix CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,7 +23,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install via pip (no Cython)
-      run: |
-        pip install .
+      run: pip install .
     - name: Install via pip (with Cython)
-        pip install .[cython]
+      run: pip install .[cython]
