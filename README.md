@@ -1,5 +1,7 @@
 # rberga06-matrix
 
+[![CI](https://github.com/RBerga06/python-matrix-savescreen/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RBerga06/python-matrix-savescreen/actions/workflows/ci.yml)
+
 Terminal screensaver with _Matrix_-like raindrop effect, written in Python.
 
 > **Warning**
