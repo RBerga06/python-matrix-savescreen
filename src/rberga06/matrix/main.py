@@ -44,12 +44,12 @@ else:
         from math import floor
 
 
-ALPHABET: str = "01"  # bin
+# ALPHABET: str = "01"  # bin
 # ALPHABET: str = "01234567"  # oct
 # ALPHABET: str = "0123456789"  # dec
 # ALPHABET: str = "0123456789ABCDEF"  # hex
 # ALPHABET: str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"  # eng
-# ALPHABET: str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"  # all
+ALPHABET: str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"  # all
 ALPHABET_LEN: cint = len(ALPHABET)
 COLORS: list[str] = [
     "white bold",
