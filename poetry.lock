@@ -32,7 +32,7 @@ name = "cython"
 version = "3.0.0b3"
 description = "The Cython compiler for writing C extensions in the Python language."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "Cython-3.0.0b3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:151791bedbfcf428b635514834ea509f5f2080f8151d74a7990a4b615bbfde7f"},
@@ -192,7 +192,10 @@ files = [
     {file = "typing_extensions-4.6.3.tar.gz", hash = "sha256:d91d5919357fe7f681a9f2b5b4cb2a5f1ef0a1e9f59c4d8ff0d3491e05c0ffd5"},
 ]
 
+[extras]
+cython = ["cython"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8c889b36c8017bb5427977c5134facb3c42d487753a1fb4e08dd46890b967a4d"
+content-hash = "538d1864b9b8fa69450137e07a4723cf87333b95f34cc840e033636c7e7795ef"

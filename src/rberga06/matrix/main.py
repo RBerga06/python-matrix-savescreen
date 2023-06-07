@@ -1,14 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # cython: language=c++
-import cython
 from rich import get_console
 from rich.columns import Columns
 from rich.live import Live
 from typer import Typer
 
+try:
+    import cython
+except ModuleNotFoundError:
+    from typing import TYPE_CHECKING
+    assert not TYPE_CHECKING
+    _dec = staticmethod(lambda x, **kw: x)
+    _dec_factory = staticmethod(lambda *a, **kw: (lambda x, **kw: x))
+    _fn  = staticmethod(lambda *a, **kw: None)
+    class cython:
+        compiled = False
+        nogil = _dec
+        cfunc = _dec
+        ccall = _dec
+        cclass = _dec
+        locals = _dec_factory
+
 
 if cython.compiled:
+    from typing import TYPE_CHECKING
+    assert not TYPE_CHECKING
     from cython import cast
     # builtin types
     cint    = cython.typedef(cython.int)
@@ -170,3 +187,7 @@ def matrix():
             except KeyboardInterrupt:
                 break
         live.stop()
+    if cython.compiled:
+        print("Hello, Matrix! It's Cython!")
+    else:
+        print("Hello, Matrix! It's Python!")

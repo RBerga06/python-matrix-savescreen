@@ -11,7 +11,7 @@ packages = [{include = "rberga06", from = "src"}]
 python = "^3.11"
 rich = "^13.4.1"
 typer = "^0.9.0"
-cython = {version = "^3.0.0b3", allow-prereleases = true}
+cython = {version = "^3.0.0b3", allow-prereleases = true, optional = true}
 
 [tool.poetry.build]
 script = "build.py"
@@ -20,6 +20,9 @@ generate-setup-file = true
 [tool.poetry.scripts]
 matrix = "rberga06.matrix.main:app"
 
+[tool.poetry.extras]
+cython = ["cython"]
+
 [build-system]
-requires = ["poetry-core", "cython"]
+requires = ["poetry-core", "setuptools"]
 build-backend = "poetry.core.masonry.api"
