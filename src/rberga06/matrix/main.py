@@ -155,6 +155,10 @@ class Column:
 
 
 @app.command()
+@cython.locals(
+    columns=list[Column],
+    column=Column,
+)
 def matrix():
     columns = [Column(COL_LENGTH) for _ in range(COL_NUMBER)]
     with Live(Columns(columns, width=1, align="left", expand=True), screen=True) as live:
