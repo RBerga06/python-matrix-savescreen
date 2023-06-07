@@ -18,7 +18,7 @@ else:
     def build(setup_kwargs):
         # The file you want to compile
         extensions = [
-            "rberga06/matrix/main.py",
+            Extension("rberga06.matrix.main", ["src/rberga06/matrix/main.py"]),
         ]
 
         # gcc arguments hack: enable optimizations
@@ -28,6 +28,7 @@ else:
         setup_kwargs.update({
             'ext_modules': cythonize(
                 extensions,
+                annotate=True,
                 language_level=3,
                 compiler_directives={'linetrace': True},
             ),
