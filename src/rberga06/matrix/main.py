@@ -36,10 +36,11 @@ if cython.compiled:
     from cython.cimports.libcpp.vector import vector
     # random()
     from cython.cimports.libc.stdlib import rand, RAND_MAX
-    @cython.nogil
     @cython.cfunc
+    @cython.nogil
+    @cython.cdivision(True)
     def random() -> cdouble:
-        return rand() / RAND_MAX
+        return cast(cdouble, rand()) / cast(cdouble, RAND_MAX)
     # floor()
     from cython.cimports.libc.math import floor
 else:
@@ -144,10 +145,12 @@ def get_color(i: cint) -> str:
 @cython.cclass
 class Column:
     __slots__ = ("chars", "drops")
+    chars_len: cint
     chars: list[cchar]
     drops: list[cint]
 
     def __init__(self, length: cint, /) -> void:
+        self.chars_len = length
         self.chars = [randchar() for _ in range(length)]
         self.drops = [-1]
 
@@ -182,9 +185,10 @@ class Column:
         chr:   cchar
         bchr:  p_cchar
         delta: cint
-        for i, chr in enumerate(self.chars):
+        for i in range(self.chars_len):
+            chr = self.chars[i]
             if drops:
-                delta = drops[0] - i
+                delta = cast(cint, drops[0]) - i
                 if delta == 0:  # last character of the drop
                     drops.pop(0)  # pass to the next drop
             else:
