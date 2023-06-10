@@ -88,7 +88,6 @@ cdef extern from *:
         //
         "black",
     };
-    */
     """
     const int ALPHABET_LEN
     const char *ALPHABET
