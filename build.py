@@ -19,15 +19,9 @@ else:
     from distutils.command.build_ext import build_ext
 
     def _cython_ext(root: Path, pyx: Path) -> Extension:
-        name = ".".join(pyx.with_suffix("").relative_to(root).parts)
-        sources = [str(pyx)]
-        pxd = pyx.with_suffix(".pxd")
-        if pxd.exists() and pxd.is_file():
-            sources.append(str(pxd))
-        log.write(f"Extension({name!r}, {sources!r})\n")
         return Extension(
-            name,
-            sources,
+            ".".join(pyx.with_suffix("").relative_to(root).parts),
+            [str(pyx)],
             language="c++",
         )
 
