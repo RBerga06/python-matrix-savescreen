@@ -3,7 +3,7 @@
 """Fake `cython` module for pure Python mode."""
 import builtins
 import types
-from typing import Any, Callable, Literal, TypeVar, overload
+from typing import Any, Callable, Literal, TypeVar
 _T = TypeVar("_T")
 _F = TypeVar("_F", bound=Callable[..., Any])
 _C = TypeVar("_C", bound=type[Any])
@@ -58,12 +58,12 @@ def declare(t: type[_T], v: Any = None, /) -> _T:
     """`x = declare(t, v)` <=> `cdef t x = v`"""
     return cast(t, v)
 
-@overload
-def address(x: char, /) -> p_char: ...
-@overload
-def address(x: _T, /) -> list[_T]: ...
-def address(x: char, /) -> p_char:
-    """`address(x)` <=> `&x`"""
-    if isinstance(x, char):
-        return bytes([x])
-    return [x]
+# @overload
+# def address(x: char, /) -> p_char: ...
+# @overload
+# def address(x: _T, /) -> list[_T]: ...
+# def address(x: char, /) -> p_char:
+#     """`address(x)` <=> `&x`"""
+#     if isinstance(x, char):
+#         return bytes([x])
+#     return [x]
