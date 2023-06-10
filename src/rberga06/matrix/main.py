@@ -116,7 +116,7 @@ def get_color(i: cint) -> str:
 
 @cython.cclass
 class Column:
-    __slots__ = ("chars", "drops")
+    __slots__ = ("chars_len", "chars", "drops")
     chars_len: cint
     chars: list[cchar]
     drops: list[cint]

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Compatibility layer & stdlib definitions for pure Python mode."""
 from types import NoneType
-from typing import Any, Callable, ClassVar, Literal, TypeVar
+from typing import Any, Callable, ClassVar, Literal, TypeVar, overload
 _T = TypeVar("_T")
 _F = TypeVar("_F", bound=Callable[..., Any])
 _C = TypeVar("_C", bound=type[Any])
@@ -12,7 +12,7 @@ cint    = int
 cbool   = bool
 cdouble = float
 cvoid   = NoneType
-cchar   = bytes
+cchar   = int
 # Pointer types
 p_cchar = bytes
 
@@ -58,8 +58,14 @@ class cython:
         return cython.cast(t, v)
 
     @staticmethod
+    @overload
+    def address(x: cchar, /) -> p_cchar: ...
+    @overload
+    def address(x: _T, /) -> list[_T]: ...
     def address(x: cchar, /) -> p_cchar:
         """`address(x)` <=> `&x`"""
-        return x
+        if isinstance(x, cchar):
+            return bytes([x])
+        return [x]
 
 # Standard library functions
