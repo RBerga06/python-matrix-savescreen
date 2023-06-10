@@ -8,16 +8,19 @@ _T = TypeVar("_T")
 _F = TypeVar("_F", bound=Callable[..., Any])
 _C = TypeVar("_C", bound=type[Any])
 
-# Basic types
+### Cython builtin types ###
 int    = builtins.int
 bint   = builtins.bool
 double = builtins.float
 void   = types.NoneType
 char   = builtins.int
-# Pointer types
+size_t = builtins.int
+# Pointers
 p_char = builtins.bytes
 
 compiled: Literal[False] = False
+
+### Cython directives ###
 
 def cast(t: type[_T], x: Any, /) -> _T:
     """`cast(t, x)` <=> `<t>(x)`"""
@@ -40,6 +43,12 @@ def cclass(f: _C, /) -> _C:
     return f
 
 def locals(**cdefs: type) -> Callable[[_F], _F]:
+    """`cdef:` block for function local variables."""
+    def inner(f: _F) -> _F:
+        return f
+    return inner
+
+def exceptval(val: Any, /, *, check: bool = False) -> Callable[[_F], _F]:
     """`cdef:` block for function local variables."""
     def inner(f: _F) -> _F:
         return f

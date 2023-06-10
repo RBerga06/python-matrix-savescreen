@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# cython: language=c++
+# build.py: cythonize
 from typing import TYPE_CHECKING
 from rich import get_console
 from rich.columns import Columns
@@ -9,64 +9,49 @@ from typer import Typer
 
 try:
     assert not TYPE_CHECKING
-    import cython as cy
+    import cython as c
 except ModuleNotFoundError:
-    from .pycompat import cython as cy
+    from . import cython as c
 
 
-if cy.compiled:
+if c.compiled:
     assert not TYPE_CHECKING
-    # builtin types
-    cint    = cython.typedef(cython.int)
-    cbool   = cython.typedef(cython.bint)
-    cdouble = cython.typedef(cython.double)
-    void    = cython.typedef(cython.void)
-    cchar   = cython.typedef(cython.char)
-    p_cchar = cython.typedef(cython.p_char)
-    from cython.cimports.libcpp.vector import vector
-    # random()
-    from cython.cimports.libc.stdlib import rand, RAND_MAX
-    @cython.cfunc
-    @cython.nogil
-    @cython.cdivision(True)
-    def random() -> cdouble:
-        return cy.cast(cdouble, rand()) / cy.cast(cdouble, RAND_MAX)
-    # floor()
-    from cython.cimports.libc.math import floor
+    from cython.cimports.rberga06.matrix.utils import happens, choice
 else:
-    from random import random
-    from .pycompat import *
-    # For the static type checker
-    if TYPE_CHECKING:
-        def floor(_: float, /) -> float: ...
-    else:
-        from math import floor
+    import random as _random
+    def choice(array: c.p_char, len: c.int):
+        return _random.choice(array)
+    def happens(p: c.double):
+        return _random.random() <= p
 
 
 ### Alphabet: Bin ###
-# ALPHABET_LEN = cy.declare(cint, 2)
-# ALPHABET     = cy.declare(str, "01")
+# ALPHABET_LEN = c.declare(c.size_t, 2)
+# ALPHABET     = c.declare(c.p_char, "01")
 ### Alphabet: Oct ###
-# ALPHABET_LEN = cy.declare(cint, 8)
-# ALPHABET     = cy.declare(str, "01234567")
+# ALPHABET_LEN = c.declare(c.size_t, 8)
+# ALPHABET     = c.declare(c.p_char, "01234567")
 ### Alphabet: Dec ###
-# ALPHABET_LEN = cy.declare(cint, 10)
-# ALPHABET     = cy.declare(str, "0123456789")
+# ALPHABET_LEN = c.declare(c.size_t, 10)
+# ALPHABET     = c.declare(c.p_char, "0123456789")
 ### Alphabet: Hex ###
-# ALPHABET_LEN = cy.declare(cint, 16)
-# ALPHABET     = cy.declare(str, "0123456789ABCDEF")
+# ALPHABET_LEN = c.declare(c.size_t, 16)
+# ALPHABET     = c.declare(c.p_char, "0123456789ABCDEF")
 ### Alphabet: Eng ###
-# ALPHABET_LEN = cy.declare(cint, 62)
-# ALPHABET     = cy.declare(str,
+# ALPHABET_LEN = c.declare(c.size_t, 62)
+# ALPHABET     = c.declare(c.p_char,
 #   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 # )
 ### Alphabet: All ###
-ALPHABET_LEN = cy.declare(cint, 94)
-ALPHABET     = cy.declare(p_cchar,
-    b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+ALPHABET_LEN = c.declare(c.size_t, 94)
+ALPHABET     = c.declare(c.p_char,
+    b"0123456789"
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    b"abcdefghijklmnopqrstuvwxyz"
+    b"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 )
 ### Colors ###
-COLORS = cy.declare(list[str], [
+COLORS = c.declare(list[str], [
     "white bold",
     "color(46) bold",
     *["color(46)"]*3,
@@ -76,62 +61,51 @@ COLORS = cy.declare(list[str], [
     *["color(22)"]*11,
     "black"
 ])
-COLORS_LEN    = cy.declare(cint, 37)
-WIDTH         = cy.declare(cint)
-HEIGHT        = cy.declare(cint)
+COLORS_LEN    = c.declare(c.int, 37)
+WIDTH         = c.declare(c.int)
+HEIGHT        = c.declare(c.int)
 WIDTH, HEIGHT = get_console().size
-MAX_LEN_DROP  = cy.declare(cint, WIDTH + COLORS_LEN)
-P_CHR_CHANGE  = cy.declare(cdouble, .10)
-P_NEW_DROP    = cy.declare(cdouble, 1 / WIDTH)
-COL_NUMBER    = cy.declare(cint, WIDTH // 2)
-COL_LENGTH    = cy.declare(cint, HEIGHT)
+MAX_LEN_DROP  = c.declare(c.int, WIDTH + COLORS_LEN)
+P_CHR_CHANGE  = c.declare(c.double, .10)
+P_NEW_DROP    = c.declare(c.double, 1 / WIDTH)
+COL_NUMBER    = c.declare(c.int, WIDTH // 2)
+COL_LENGTH    = c.declare(c.int, HEIGHT)
 
 
 app = Typer()
 
 
-@cython.nogil
-@cython.cfunc
-def rand_i(n: cint) -> cint:
-    return cy.cast(cint, floor(random() * n))
-
-
-@cython.nogil
-@cython.cfunc
-def happens(p: cdouble) -> cbool:
-    """Return `True` with probability `p`."""
-    return random() <= p
-
-
-@cython.cfunc
-def randchar() -> cchar:
+@c.cfunc
+@c.nogil
+@c.exceptval(check=False)
+def randchar() -> c.char:
     """Generate a random character."""
-    return ALPHABET[rand_i(ALPHABET_LEN)]
+    return choice(ALPHABET, ALPHABET_LEN)
 
 
-@cython.cfunc
-def get_color(i: cint) -> str:
+@c.cfunc
+def get_color(i: c.size_t) -> str:
     return COLORS[min(i, len(COLORS) - 1)]
 
 
-@cython.cclass
+@c.cclass
 class Column:
     __slots__ = ("chars_len", "chars", "drops")
-    chars_len: cint
-    chars: list[cchar]
-    drops: list[cint]
+    chars_len: c.int
+    chars: list[c.char]
+    drops: list[c.int]
 
-    def __init__(self, length: cint, /) -> cvoid:
+    def __init__(self, length: c.size_t, /) -> c.void:
         self.chars_len = length
         self.chars = [randchar() for _ in range(length)]
         self.drops = [-1]
 
-    @cython.ccall
-    @cython.locals(
-        drop=cint,
-        i=cint,
+    @c.ccall
+    @c.locals(
+        drop=c.int,
+        i=c.int,
     )
-    def update(self, /) -> cvoid:
+    def update(self, /) -> c.void:
         # Move all drops by 1 character. Also remove dead drops
         self.drops = drops = [
             drop + 1
@@ -153,26 +127,26 @@ class Column:
         rich:  str = ""
         drops: list[int] = [*self.drops]
         color: str
-        i:     cint
-        chr:   cchar
-        bchr:  p_cchar
-        delta: cint
+        i:     c.int
+        chr:   c.char
+        bchr:  c.p_char
+        delta: c.int
         for i in range(self.chars_len):
             chr = self.chars[i]
             if drops:
-                delta = cy.cast(cint, drops[0]) - i
+                delta = c.cast(c.int, drops[0]) - i
                 if delta == 0:  # last character of the drop
                     drops.pop(0)  # pass to the next drop
             else:
                 delta = -1
             color = get_color(delta)
-            bchr = cy.address(chr)
+            bchr = c.address(chr)
             rich += f"[{color}]{bchr.decode()}[/{color}]\n"
         return rich[:-1]
 
 
 @app.command()
-@cython.locals(
+@c.locals(
     columns=list[Column],
     column=Column,
 )
@@ -187,7 +161,7 @@ def matrix():
             except KeyboardInterrupt:
                 break
         live.stop()
-    if cython.compiled:
-        print("Hello, Matrix! It's Cython!")
+    if c.compiled:
+        print("Hello, Matrix! It's c!")
     else:
         print("Hello, Matrix! It's Python!")
