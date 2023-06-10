@@ -2,7 +2,7 @@
 """Compile-time constants."""
 
 cdef extern from *:
-    """
+    r"""
     /****** ALPHABET ******/
     /* Preliminary definitions: character sets */
     #define CHARS_BIN "01"
@@ -12,7 +12,10 @@ cdef extern from *:
     #define CHARS_LETTERS_L "abcdefghijklmnopqrstuvwxyz"  // lowercase
     #define CHARS_LETTERS_U "ABCDEFGHIJKLMNOPQRSTUVWXYZ"  // uppercase
     #define CHARS_LETTERS CHARS_LETTERS_L+CHARS_LETTERS_U
-    #define CHARS_MISC "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"  // other characters
+    #define _CHARS_MISC_OK "!#$%&()*+,-./:;<=>?@[\\]^_`{|}~" // other characters
+    #define _CHARS_MISC_QUOTE1 "\"" // needs correct escaping
+    #define _CHARS_MISC_QUOTE2 ""   // needs correct escaping
+    #define CHARS_MISC _CHARS_MISC_OK+_CHARS_MISC_QUOTE1+_CHARS_MISC_QUOTE2
     #define CHARS_SPACE " "
     #define CHARS_ORDINARY CHARS_DIGITS+CHARS_LETTERS
     #define CHARS_PRINTABLE CHARS_ORDINARY+CHARS_MISC
@@ -37,7 +40,7 @@ cdef extern from *:
     // #define ALPHABET_LEN 10+26+26+32+1
 
     /****** COLORS ******/
-    #define COLORS_LEN 37
+    #define COLORS_LEN 38
     const char *COLORS[COLORS_LEN] = {
         //
         "white bold",
@@ -84,7 +87,7 @@ cdef extern from *:
         "color(22)",
         //
         "black",
-    }
+    };
     */
     """
     const int ALPHABET_LEN

@@ -58,7 +58,7 @@ def randchar() -> c.char:
 
 
 @c.cfunc
-# @c.nogil
+@c.nogil
 @c.exceptval(check=False)
 def get_color(i: c.size_t) -> c.p_char:
     return c.cast(c.p_char, COLORS[min(i, COLORS_LEN - 1)])
@@ -71,7 +71,7 @@ class Column:
     chars: list[c.char]
     drops: list[c.int]
 
-    def __init__(self, length: c.size_t, /) -> c.void:
+    def __init__(self, length: c.int, /) -> c.void:
         self.chars_len = length
         self.chars = [randchar() for _ in range(length)]
         self.drops = [-1]
