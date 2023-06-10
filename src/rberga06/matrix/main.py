@@ -1,29 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # cython: language=c++
+from typing import TYPE_CHECKING
 from rich import get_console
 from rich.columns import Columns
 from rich.live import Live
 from typer import Typer
 
 try:
+    assert not TYPE_CHECKING
     import cython
 except ModuleNotFoundError:
-    from typing import TYPE_CHECKING
-    assert not TYPE_CHECKING
-    _dec = lambda _, x, **kw: x
-    class _cython:
-        compiled = False
-        nogil = _dec
-        cfunc = _dec
-        ccall = _dec
-        cclass = _dec
-        locals = lambda _, *a, **kw: (lambda x, **kw: x)
-    cython = _cython()
+    from .pycompat import cython
 
 
 if cython.compiled:
-    from typing import TYPE_CHECKING
     assert not TYPE_CHECKING
     from cython import address, cast, declare
     # builtin types
@@ -45,25 +36,10 @@ if cython.compiled:
     from cython.cimports.libc.math import floor
 else:
     from random import random
-    from typing import TYPE_CHECKING, Any, TypeVar, cast
-    from types import NoneType
-    _T = TypeVar("_T")
-    # builtin types
-    cint    = int
-    cbool   = bool
-    cdouble = float
-    void    = NoneType
-    cchar   = bytes
-    p_cchar = bytes
-    # vector
-    class vector(list[_T]):
-        """C++'s `std::vector<_T>` type"""
-    # declare(...)
-    def declare(t: type[_T], x: Any = None, /) -> _T:
-        return x
-    # address(...)
-    def address(x: cchar) -> p_cchar:
-        return x
+    from typing import cast
+    from .pycompat import *
+    declare = cython.declare
+    address = cython.address
     # For the static type checker
     if TYPE_CHECKING:
         def floor(_: float, /) -> float: ...
@@ -149,7 +125,7 @@ class Column:
     chars: list[cchar]
     drops: list[cint]
 
-    def __init__(self, length: cint, /) -> void:
+    def __init__(self, length: cint, /) -> cvoid:
         self.chars_len = length
         self.chars = [randchar() for _ in range(length)]
         self.drops = [-1]
@@ -159,7 +135,7 @@ class Column:
         drop=cint,
         i=cint,
     )
-    def update(self, /) -> void:
+    def update(self, /) -> cvoid:
         # Move all drops by 1 character. Also remove dead drops
         self.drops = drops = [
             drop + 1
