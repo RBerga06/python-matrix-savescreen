@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 from typing import Any, Iterator
 
-log = open(Path(__file__).parent/"build.py.log", mode="+a")
-
 # See if Cython is installed
 try:
     from Cython.Build import cythonize

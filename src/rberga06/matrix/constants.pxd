@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Compile-time constants."""
 
-cdef extern from "*":
+cdef extern from *:
     """
     /****** ALPHABET ******/
     /* Preliminary definitions: character sets */
@@ -87,7 +87,7 @@ cdef extern from "*":
     }
     */
     """
-    cdef const int ALPHABET_LEN
-    cdef const char *ALPHABET
-    cdef const int COLORS_LEN
-    cdef const char COLORS[]
+    const int ALPHABET_LEN
+    const char *ALPHABET
+    const int COLORS_LEN
+    const char COLORS[]

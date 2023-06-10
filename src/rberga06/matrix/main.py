@@ -61,7 +61,7 @@ def randchar() -> c.char:
 # @c.nogil
 @c.exceptval(check=False)
 def get_color(i: c.size_t) -> c.p_char:
-    return COLORS[min(i, COLORS_LEN - 1)]
+    return c.cast(c.p_char, COLORS[min(i, COLORS_LEN - 1)])
 
 
 @c.cclass
