@@ -16,52 +16,26 @@ except ModuleNotFoundError:
 
 if c.compiled:
     assert not TYPE_CHECKING
-    from cython.cimports.rberga06.matrix.utils import happens, choice
+    from cython.cimports.rberga06.matrix.constants import (
+        ALPHABET, ALPHABET_LEN, COLORS, COLORS_LEN,
+    )
+    from cython.cimports.rberga06.matrix.utils import (
+        happens, choice, char2ptr, p_p_char
+    )
 else:
+    from .constants import (
+        ALPHABET, ALPHABET_LEN, COLORS, COLORS_LEN
+    )
     import random as _random
-    def choice(array: c.p_char, len: c.int):
+    p_p_char = list[c.p_char]
+    def choice(array: c.p_char, len: c.int) -> c.char:
         return _random.choice(array)
-    def happens(p: c.double):
+    def happens(p: c.double) -> bool:
         return _random.random() <= p
+    def char2ptr(c: c.char) -> c.p_char:
+        return bytes([c])
 
 
-### Alphabet: Bin ###
-# ALPHABET_LEN = c.declare(c.size_t, 2)
-# ALPHABET     = c.declare(c.p_char, "01")
-### Alphabet: Oct ###
-# ALPHABET_LEN = c.declare(c.size_t, 8)
-# ALPHABET     = c.declare(c.p_char, "01234567")
-### Alphabet: Dec ###
-# ALPHABET_LEN = c.declare(c.size_t, 10)
-# ALPHABET     = c.declare(c.p_char, "0123456789")
-### Alphabet: Hex ###
-# ALPHABET_LEN = c.declare(c.size_t, 16)
-# ALPHABET     = c.declare(c.p_char, "0123456789ABCDEF")
-### Alphabet: Eng ###
-# ALPHABET_LEN = c.declare(c.size_t, 62)
-# ALPHABET     = c.declare(c.p_char,
-#   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-# )
-### Alphabet: All ###
-ALPHABET_LEN = c.declare(c.size_t, 94)
-ALPHABET     = c.declare(c.p_char,
-    b"0123456789"
-    b"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    b"abcdefghijklmnopqrstuvwxyz"
-    b"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
-)
-### Colors ###
-COLORS = c.declare(list[str], [
-    "white bold",
-    "color(46) bold",
-    *["color(46)"]*3,
-    *["color(40)"]*5,
-    *["color(34)"]*7,
-    *["color(28)"]*9,
-    *["color(22)"]*11,
-    "black"
-])
-COLORS_LEN    = c.declare(c.int, 37)
 WIDTH         = c.declare(c.int)
 HEIGHT        = c.declare(c.int)
 WIDTH, HEIGHT = get_console().size
@@ -84,8 +58,10 @@ def randchar() -> c.char:
 
 
 @c.cfunc
-def get_color(i: c.size_t) -> str:
-    return COLORS[min(i, len(COLORS) - 1)]
+# @c.nogil
+@c.exceptval(check=False)
+def get_color(i: c.size_t) -> c.p_char:
+    return COLORS[min(i, COLORS_LEN - 1)]
 
 
 @c.cclass
@@ -139,8 +115,8 @@ class Column:
                     drops.pop(0)  # pass to the next drop
             else:
                 delta = -1
-            color = get_color(delta)
-            bchr = c.address(chr)
+            color = get_color(delta).decode()
+            bchr = char2ptr(chr)
             rich += f"[{color}]{bchr.decode()}[/{color}]\n"
         return rich[:-1]
 
@@ -162,6 +138,6 @@ def matrix():
                 break
         live.stop()
     if c.compiled:
-        print("Hello, Matrix! It's c!")
+        print("Hello, Matrix! It's Cython!")
     else:
         print("Hello, Matrix! It's Python!")
