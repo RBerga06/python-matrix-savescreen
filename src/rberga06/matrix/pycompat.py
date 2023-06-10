@@ -53,9 +53,9 @@ class cython:
         return inner
 
     @staticmethod
-    def declare(t: type[_T], x: Any = None, /) -> _T:
-        """`v = declare(t, x)` <=> `cdef t v = x`"""
-        return cython.cast(t, x)
+    def declare(t: type[_T], v: Any = None, /) -> _T:
+        """`x = declare(t, v)` <=> `cdef t x = v`"""
+        return cython.cast(t, v)
 
     @staticmethod
     def address(x: cchar, /) -> p_cchar:

@@ -9,14 +9,13 @@ from typer import Typer
 
 try:
     assert not TYPE_CHECKING
-    import cython
+    import cython as cy
 except ModuleNotFoundError:
-    from .pycompat import cython
+    from .pycompat import cython as cy
 
 
-if cython.compiled:
+if cy.compiled:
     assert not TYPE_CHECKING
-    from cython import address, cast, declare
     # builtin types
     cint    = cython.typedef(cython.int)
     cbool   = cython.typedef(cython.bint)
@@ -31,15 +30,12 @@ if cython.compiled:
     @cython.nogil
     @cython.cdivision(True)
     def random() -> cdouble:
-        return cast(cdouble, rand()) / cast(cdouble, RAND_MAX)
+        return cy.cast(cdouble, rand()) / cy.cast(cdouble, RAND_MAX)
     # floor()
     from cython.cimports.libc.math import floor
 else:
     from random import random
-    from typing import cast
     from .pycompat import *
-    declare = cython.declare
-    address = cython.address
     # For the static type checker
     if TYPE_CHECKING:
         def floor(_: float, /) -> float: ...
@@ -48,29 +44,29 @@ else:
 
 
 ### Alphabet: Bin ###
-# ALPHABET_LEN = declare(cint, 2)
-# ALPHABET     = declare(str, "01")
+# ALPHABET_LEN = cy.declare(cint, 2)
+# ALPHABET     = cy.declare(str, "01")
 ### Alphabet: Oct ###
-# ALPHABET_LEN = declare(cint, 8)
-# ALPHABET     = declare(str, "01234567")
+# ALPHABET_LEN = cy.declare(cint, 8)
+# ALPHABET     = cy.declare(str, "01234567")
 ### Alphabet: Dec ###
-# ALPHABET_LEN = declare(cint, 10)
-# ALPHABET     = declare(str, "0123456789")
+# ALPHABET_LEN = cy.declare(cint, 10)
+# ALPHABET     = cy.declare(str, "0123456789")
 ### Alphabet: Hex ###
-# ALPHABET_LEN = declare(cint, 16)
-# ALPHABET     = declare(str, "0123456789ABCDEF")
+# ALPHABET_LEN = cy.declare(cint, 16)
+# ALPHABET     = cy.declare(str, "0123456789ABCDEF")
 ### Alphabet: Eng ###
-# ALPHABET_LEN = declare(cint, 62)
-# ALPHABET     = declare(str,
+# ALPHABET_LEN = cy.declare(cint, 62)
+# ALPHABET     = cy.declare(str,
 #   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 # )
 ### Alphabet: All ###
-ALPHABET_LEN = declare(cint, 94)
-ALPHABET     = declare(p_cchar,
+ALPHABET_LEN = cy.declare(cint, 94)
+ALPHABET     = cy.declare(p_cchar,
     b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
 )
 ### Colors ###
-COLORS = declare(list[str], [
+COLORS = cy.declare(list[str], [
     "white bold",
     "color(46) bold",
     *["color(46)"]*3,
@@ -80,15 +76,15 @@ COLORS = declare(list[str], [
     *["color(22)"]*11,
     "black"
 ])
-COLORS_LEN    = declare(cint, 37)
-WIDTH         = declare(cint)
-HEIGHT        = declare(cint)
+COLORS_LEN    = cy.declare(cint, 37)
+WIDTH         = cy.declare(cint)
+HEIGHT        = cy.declare(cint)
 WIDTH, HEIGHT = get_console().size
-MAX_LEN_DROP  = declare(cint, WIDTH + COLORS_LEN)
-P_CHR_CHANGE  = declare(cdouble, .10)
-P_NEW_DROP    = declare(cdouble, 1 / WIDTH)
-COL_NUMBER    = declare(cint, WIDTH // 2)
-COL_LENGTH    = declare(cint, HEIGHT)
+MAX_LEN_DROP  = cy.declare(cint, WIDTH + COLORS_LEN)
+P_CHR_CHANGE  = cy.declare(cdouble, .10)
+P_NEW_DROP    = cy.declare(cdouble, 1 / WIDTH)
+COL_NUMBER    = cy.declare(cint, WIDTH // 2)
+COL_LENGTH    = cy.declare(cint, HEIGHT)
 
 
 app = Typer()
@@ -97,7 +93,7 @@ app = Typer()
 @cython.nogil
 @cython.cfunc
 def rand_i(n: cint) -> cint:
-    return cast(cint, floor(random() * n))
+    return cy.cast(cint, floor(random() * n))
 
 
 @cython.nogil
@@ -164,13 +160,13 @@ class Column:
         for i in range(self.chars_len):
             chr = self.chars[i]
             if drops:
-                delta = cast(cint, drops[0]) - i
+                delta = cy.cast(cint, drops[0]) - i
                 if delta == 0:  # last character of the drop
                     drops.pop(0)  # pass to the next drop
             else:
                 delta = -1
             color = get_color(delta)
-            bchr = address(chr)
+            bchr = cy.address(chr)
             rich += f"[{color}]{bchr.decode()}[/{color}]\n"
         return rich[:-1]
 
