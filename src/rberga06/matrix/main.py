@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # build.py: cythonize
+from os import get_terminal_size
 from typing import TYPE_CHECKING
-from rich import get_console
 from rich.columns import Columns
 from rich.live import Live
 from typer import Typer
@@ -38,7 +38,7 @@ else:
 
 WIDTH         = c.declare(c.int)
 HEIGHT        = c.declare(c.int)
-WIDTH, HEIGHT = get_console().size
+WIDTH, HEIGHT = get_terminal_size()
 MAX_LEN_DROP  = c.declare(c.int, WIDTH + COLORS_LEN)
 P_CHR_CHANGE  = c.declare(c.double, .10)
 P_NEW_DROP    = c.declare(c.double, 1 / WIDTH)
@@ -71,12 +71,18 @@ class Column:
     chars: list[c.char]
     drops: list[c.int]
 
-    def __init__(self, length: c.int, /) -> c.void:
+    if not c.compiled:
+        def __new__(cls, length: c.int, /) -> "Column":
+            obj = super().__new__(cls)
+            obj.__cinit__(length)
+            return obj
+
+    def __cinit__(self, length: c.int, /) -> c.void:
         self.chars_len = length
         self.chars = [randchar() for _ in range(length)]
         self.drops = [-1]
 
-    @c.ccall
+    @c.cfunc
     @c.locals(
         drop=c.int,
         i=c.int,
@@ -101,7 +107,7 @@ class Column:
 
     def __rich__(self, /) -> str:
         rich:  str = ""
-        drops: list[int] = [*self.drops]
+        drops: list[c.int] = [*self.drops]
         color: str
         i:     c.int
         chr:   c.char
@@ -122,12 +128,12 @@ class Column:
 
 
 @app.command()
-@c.locals(
-    columns=list[Column],
-    column=Column,
-)
 def matrix():
-    columns = [Column(COL_LENGTH) for _ in range(COL_NUMBER)]
+    columns: list[Column] = [
+        Column.__new__(Column, COL_LENGTH)
+        for _ in range(COL_NUMBER)
+    ]
+    column: Column
     with Live(Columns(columns, width=1, align="left", expand=True), screen=True) as live:
         while True:
             try:
