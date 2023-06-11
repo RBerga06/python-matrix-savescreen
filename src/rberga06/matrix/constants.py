@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# build.py: cythonize
 """Cython compile-time constants."""
 # Everything Cython needs is defined in the .pxd
+from typing import TYPE_CHECKING
+
 try:
+    assert not TYPE_CHECKING
     import cython as c
 except ModuleNotFoundError:
     from . import cython as c

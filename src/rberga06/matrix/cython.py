@@ -48,7 +48,7 @@ def locals(**cdefs: type) -> Callable[[_F], _F]:
         return f
     return inner
 
-def exceptval(val: Any, /, *, check: bool = False) -> Callable[[_F], _F]:
+def exceptval(val: Any = None, /, *, check: bool = True) -> Callable[[_F], _F]:
     """`cdef:` block for function local variables."""
     def inner(f: _F) -> _F:
         return f
