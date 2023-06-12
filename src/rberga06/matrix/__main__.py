@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-from .main import app
+from .matrix import main
 
 if __name__ == "__main__":
-    sys.exit(app())
+    sys.exit(main())
