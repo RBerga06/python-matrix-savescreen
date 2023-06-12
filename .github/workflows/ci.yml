@@ -24,7 +24,5 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install via pip (no Cython)
+    - name: Install via pip
       run: pip install .
-    - name: Install via pip (with Cython)
-      run: pip install .[cython]
