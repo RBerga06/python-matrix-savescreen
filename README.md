@@ -11,12 +11,9 @@ Terminal screensaver with _Matrix_-like raindrop effect, written in Python.
 
 ## Installation
 
-In a Python 3.11 (or later) virtual environment, run:
+In a CPython 3.11 (or later) virtual environment, run:
 ```bash
-# Pure Python package:
 python -m pip install "rberga06-matrix @ git+https://github.com/RBerga06/python-matrix-savescreen"
-# If you wish it was faster:
-python -m pip install "rberga06-matrix[cython] @ git+https://github.com/RBerga06/python-matrix-savescreen"
 ```
 You will then be able to run the project with the simple command:
 ```bash
@@ -31,8 +28,7 @@ If you also want to play around with the project, we recommend cloning this repo
 gh repo clone RBerga06/python-matrix-savescreen
 cd python-matrix-savescreen
 # Build and install the project in a dedicated venv
-poetry install            # pure python package
-poetry install -E cython  # if you wish it was faster
+poetry install
 # Run the project
 poetry run matrix
 ```
