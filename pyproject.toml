@@ -12,6 +12,7 @@ python = "^3.11"
 rich = "^13.4.1"
 typer = "^0.9.0"
 cython = {version = "^3.0.0b3", allow-prereleases = true, optional = true}
+numpy = "^1.24.3"
 
 [tool.poetry.build]
 script = "build.py"
