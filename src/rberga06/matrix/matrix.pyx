@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-from rberga06.matrix.constants cimport (
-    ALPHABET, ALPHABET_LEN,
-    COLORS, COLORS_LEN,
-)
+# cython: cdivision=True
 cimport cython
 from libc.stdlib cimport rand, RAND_MAX
 from libc.math cimport floor
 from libcpp.string cimport string
+from rberga06.matrix.constants cimport (
+    ALPHABET, ALPHABET_LEN,
+    COLORS, COLORS_LEN,
+)
 import os
 import numpy as np
 
 cdef int WIDTH = 10
 cdef int HEIGHT = 50
-# WIDTH, HEIGHT = os.get_terminal_size()
+WIDTH, HEIGHT = os.get_terminal_size()
 cdef double P_NEW_DROP = <double>.1
 cdef double P_NEW_CHAR = (<double>1) / (<double>WIDTH*2)
 
 
-@cython.cdivision(True)
 cdef double random() noexcept nogil:  # type: ignore
     return <double>rand() / (<double>RAND_MAX)
 
@@ -49,6 +49,7 @@ cdef class Matrix:
         self.chars = chars
         self.colors = colors
 
+    @cython.boundscheck(False)
     cdef void update(self) noexcept nogil:  # type: ignore
         cdef int i
         cdef int j
@@ -77,6 +78,7 @@ cdef class Matrix:
                 self.chars[i][j] = chr
                 self.colors[i][j] = color  # type: ignore
 
+    @cython.boundscheck(False)
     cdef string rich(self) noexcept nogil:  # type: ignore
         cdef char *color
         cdef char chr
@@ -122,8 +124,9 @@ cpdef int main():
     #     [0, 0, 0],
     # ], dtype=np.dtype("c"))
     # m = Matrix(m_chars, m_colors)
-    with Live(m, screen=True) as live:
+    with Live(m.rich().decode(), screen=True, auto_refresh=False) as live:
         while True:
-            live.refresh()
             m.update()
+            live.refresh()
+            sleep(1)
     return 0
