@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from rberga06.matrix.constants cimport (
+    ALPHABET, ALPHABET_LEN,
+    COLORS, COLORS_LEN,
+)
 cimport cython
 from libc.stdlib cimport rand, RAND_MAX
 from libc.math cimport floor
@@ -11,65 +15,6 @@ cdef int HEIGHT = 50
 # WIDTH, HEIGHT = os.get_terminal_size()
 cdef double P_NEW_DROP = <double>.1
 cdef double P_NEW_CHAR = (<double>1) / (<double>WIDTH*2)
-
-cdef extern from *:
-    """
-    #define ALPHABET "0123456789ABCDEF"
-    #define ALPHABET_LEN 2
-    /****** COLORS ******/
-    #define COLORS_LEN 38
-    const char *COLORS[COLORS_LEN] = {
-        //
-        "white bold",
-        "color(46) bold",
-        //
-        "color(46)",
-        "color(46)",
-        "color(46)",
-        //
-        "color(40)",
-        "color(40)",
-        "color(40)",
-        "color(40)",
-        "color(40)",
-        //
-        "color(34)",
-        "color(34)",
-        "color(34)",
-        "color(34)",
-        "color(34)",
-        "color(34)",
-        "color(34)",
-        //
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        "color(28)",
-        //
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        "color(22)",
-        //
-        "black",
-    };
-    """
-    const char *ALPHABET
-    const int ALPHABET_LEN
-    const int COLORS_LEN
-    const char COLORS[]
 
 
 @cython.cdivision(True)
