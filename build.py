@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import os
 from pathlib import Path
 from typing import Any, Iterator
@@ -10,7 +12,6 @@ def _cython_ext(root: Path, pyx: Path) -> Extension:
     return Extension(
         ".".join(pyx.with_suffix("").relative_to(root).parts),
         [str(pyx)],
-        language="c++",
     )
 
 def find_cython_exts(dir: Path, /, *, root: Path | None = None) -> Iterator[Extension]:
@@ -31,11 +32,14 @@ CY_EXTS = [*find_cython_exts(SRC)]
 
 
 def build(setup_kwargs: dict[Any]):
+    """Update `setup_kwargs`."""
+
     # gcc arguments hack: enable optimizations
     os.environ['CFLAGS'] = '-O3'
 
     # Build
     setup_kwargs.update(dict(
+        zip_safe=False,
         ext_modules=cythonize(
             CY_EXTS,
             annotate=True,

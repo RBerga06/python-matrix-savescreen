@@ -6,6 +6,9 @@ authors = ["RBerga06 <78449715+RBerga06@users.noreply.github.com>"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
 packages = [{include = "rberga06", from = "src"}]
+include = [
+    "*.pxd",
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -22,5 +25,5 @@ generate-setup-file = true
 matrix = "rberga06.matrix.matrix:main"
 
 [build-system]
-requires = ["poetry-core", "setuptools", "cython"]
+requires = ["poetry-core", "setuptools", "cython >= 3.0.0b1"]
 build-backend = "poetry.core.masonry.api"

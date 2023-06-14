@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# distutils: language=c++
 # cython: cdivision=True
 cimport cython
 from libc.stdlib cimport rand, RAND_MAX
