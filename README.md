@@ -28,7 +28,10 @@ If you also want to play around with the project, we recommend cloning this repo
 gh repo clone RBerga06/python-matrix-savescreen
 cd python-matrix-savescreen
 # Build and install the project in a dedicated venv
-poetry install
+poetry install -vv
 # Run the project
 poetry run matrix
+# Remove untracked files (*.cpp, *.so, *.html, etc.)
+#   (effectively a `src` cleanup, to prepare new, unbiased builds)
+git clean -fx
 ```
