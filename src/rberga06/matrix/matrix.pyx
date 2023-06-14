@@ -11,8 +11,8 @@ from rberga06.matrix.constants cimport (
 import os
 import numpy as np
 
-cdef int WIDTH = 10
-cdef int HEIGHT = 50
+cdef int WIDTH
+cdef int HEIGHT
 WIDTH, HEIGHT = os.get_terminal_size()
 cdef double P_NEW_DROP = <double>.1
 cdef double P_NEW_CHAR = (<double>1) / (<double>WIDTH*2)
@@ -106,27 +106,21 @@ cdef class Matrix:
         return self.rich().decode()
 
 
-cpdef int main():
-    from time import sleep
-    from rich.live import Live
+cdef Matrix matrix(int height, int width):
     cdef Matrix m = Matrix.__new__(Matrix)
-    m_chars = np.full((HEIGHT, WIDTH), b'0', dtype=np.dtype("c"))
+    m_chars = np.full((height, width), b'0', dtype=np.dtype("c"))
     m_colors = np.array([
-        [0]*WIDTH,
-        *[[COLORS_LEN - 1]*WIDTH]*(HEIGHT-1)
+        [0]*width,
+        *[[COLORS_LEN - 1]*width]*(height-1)
     ], dtype=np.dtype("i"))
-    m.init(WIDTH, HEIGHT, m_chars, m_colors)  # type: ignore
-    # m_chars = np.zeros((3, 4), dtype=np.dtype("c"))
-    # m_colors = np.array([
-    #     [3, 3, 3],
-    #     [2, 2, 2],
-    #     [1, 1, 1],
-    #     [0, 0, 0],
-    # ], dtype=np.dtype("c"))
-    # m = Matrix(m_chars, m_colors)
-    with Live(m.rich().decode(), screen=True, auto_refresh=False) as live:
+    m.init(width, height, m_chars, m_colors)  # type: ignore
+    return m
+
+
+cpdef int main():
+    from rich.live import Live
+    cdef Matrix m = matrix(HEIGHT, WIDTH // 2)
+    with Live(m, screen=True) as live:
         while True:
             m.update()
             live.refresh()
-            sleep(1)
-    return 0
