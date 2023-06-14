@@ -25,17 +25,19 @@ def find_cython_exts(dir: Path, /, *, root: Path | None = None) -> Iterator[Exte
                 if "\n# build.py: cythonize\n" in path.read_text():
                     yield _cython_ext(root, path)
 
-def build(setup_kwargs: dict[Any]):
-    # src directory path
-    SRC = Path(__file__).parent/"src"
 
+SRC = Path(__file__).parent/"src"
+CY_EXTS = [*find_cython_exts(SRC)]
+
+
+def build(setup_kwargs: dict[Any]):
     # gcc arguments hack: enable optimizations
     os.environ['CFLAGS'] = '-O3'
 
     # Build
     setup_kwargs.update(dict(
         ext_modules=cythonize(
-            [*find_cython_exts(SRC)],
+            CY_EXTS,
             annotate=True,
             language_level=3,
             compiler_directives=dict(linetrace=True),
@@ -45,12 +47,3 @@ def build(setup_kwargs: dict[Any]):
         ),
         cmdclass=dict(build_ext=build_ext)
     ))
-
-
-if __name__ == "__main__":
-    from setuptools import setup
-    import sys
-    if not sys.argv[1:]:
-        sys.argv = [sys.argv[0], "build_ext", "-i"]
-    build(kwargs := {})
-    setup(**kwargs)
