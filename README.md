@@ -31,7 +31,10 @@ cd python-matrix-savescreen
 poetry install -vv
 # Run the project
 poetry run matrix
-# Remove untracked files (*.cpp, *.so, *.html, etc.)
-#   (effectively a `src` cleanup, to prepare new, unbiased builds)
+# Complete cleanup
 git clean -fx
+rm -rf build dist
+rm -rf *.egg-info
+rm -rf **/__pycache__
+rm -rf "$(poetry env info -p)"
 ```
