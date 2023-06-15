@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rberga06-matrix"
-version = "0.0.1.dev0"
+version = "1.0.0"
 description = "A Matrix-style savescreen for the terminal, implemented in Python"
 authors = ["RBerga06 <78449715+RBerga06@users.noreply.github.com>"]
 license = "AGPL-3.0-or-later"
