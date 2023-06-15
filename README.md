@@ -34,7 +34,7 @@ poetry run matrix
 # Complete cleanup
 git clean -fx
 rm -rf build dist
-rm -rf *.egg-info
+rm -rf **/*.egg-info
 rm -rf **/__pycache__
 rm -rf "$(poetry env info -p)"
 ```
